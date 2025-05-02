@@ -1,0 +1,48 @@
+/* BottomNav.css */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 390px;
+  height: 64.25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  background-color: #ffffff;
+  z-index: 100;
+}
+
+.nav-button {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-width: 0;
+  background: none;
+  border-radius: 0;
+  color: #ccc; /* 기본 회색 */
+}
+
+.nav-button .nav-icon {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor; /* SVG stroke 색상 제어 */
+  fill: none; /* 혹시 내부에 fill 있을 경우 대비 */
+}
+
+.nav-label {
+  font-size: 12px;
+  margin-top: 4px;
+  color: inherit;
+}
+
+.nav-button.active {
+  color: #000; /* active일 때 텍스트 + 아이콘 색상 */
+  font-weight: bold;
+}
