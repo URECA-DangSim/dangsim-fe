@@ -8,6 +8,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 - **Node.js** 22.15.0
 - **npm** 11.3.0
 
+## 배포 브랜치
+
+- deploy
+
 ## Available Scripts
 
 In the project directory, you can run:
