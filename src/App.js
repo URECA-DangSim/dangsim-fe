@@ -26,10 +26,10 @@
 
 // src/App.js
 import React from 'react';
-import LoadingScreen from './components/LoadingDuringPaymentScreen';
+import StartPage from './pages/PaymentPage';
 
 function App() {
-  return <LoadingScreen />;
+  return <StartPage/>;
 }
 
 export default App;
