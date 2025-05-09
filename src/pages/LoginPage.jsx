@@ -38,7 +38,7 @@ const LoginPage = () => {
         src = {googleButton}
         alt="구글 로그인"
         className={styles.googleBtn}
-        onClick={handleGoogleLogin}
+        // onClick={handleGoogleLogin}
       />
     </div>
   );
