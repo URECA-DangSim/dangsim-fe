@@ -1,0 +1,80 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.logo {
+  width: 43px; /* 적절한 크기로 조절 */
+  height: 43px;
+  object-fit: contain;
+}
+
+.userArea {
+}
+
+.loginButton {
+  display: inline-block;
+  padding: 8px 24px; /* 좌우 여백을 넉넉히 줘서 타원형 느낌 연출 */
+  background-color: #a4b465; /* Fill */
+  color: #ffffff; /* Text Fill */
+  font-size: 14px; /* Font Size */
+  text-align: center; /* Text Alignment */
+  border: 2px solid #a4b465; /* Stroke (same 색상, 2px 두께) */
+  border-radius: 40px; /* Corner Radius */
+  box-sizing: border-box; /* Border가 내부로 계산되도록 */
+  cursor: pointer;
+  line-height: 1; /* 텍스트 수직 중앙 정렬 조정 시 필요시 수정 */
+}
+
+.userInfo {
+  font-size: 14px;
+  color: #333;
+}
+
+/* src/pages/Home/Home.module.css */
+
+.container {
+  padding: 16px;
+  position: relative; /* 버튼 absolute 위치 기준 */
+  padding-bottom: 200px;
+}
+
+/* Mobile: fixed positioning */
+@media (max-width: 390px) {
+  .writeButton {
+    position: fixed;
+    right: 10px;
+    bottom: 80px;
+  }
+}
+
+/* Desktop: fixed relative to viewport, aligned with container */
+@media (min-width: 391px) {
+  .writeButton {
+    position: fixed;
+    right: calc((100vw - 390px) / 2 + 16px);
+    bottom: 80px;
+  }
+}
+
+/* Shared button styles */
+.writeButton {
+  width: 127px;
+  height: 56px;
+  border-radius: 28px;
+  background-color: #a4b465;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 1000;
+}
