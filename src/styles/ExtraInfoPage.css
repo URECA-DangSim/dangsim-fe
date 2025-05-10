@@ -1,0 +1,122 @@
+.extra-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: "Arial", sans-serif;
+}
+
+h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
+}
+
+.input-section {
+  margin-bottom: 1.8rem;
+}
+
+.input-section label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.required {
+  color: red;
+  margin-left: 0.2rem;
+}
+
+.nickname-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.input-nickname {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  height: 28px;
+}
+
+.check-button {
+  padding: 0 1rem;
+  height: 42px;
+  font-size: 0.95rem;
+  background-color: #a4b465;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.check-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: red;
+}
+
+.select-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.select-row select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  color: black;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.select-row select,
+.select-row option {
+  background-color: white !important;
+  color: black !important;
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 0.75rem;
+  background-color: #626f47;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #384124;
+}
+
+/* 반응형 지원 */
+@media (min-width: 768px) {
+  .select-row {
+    flex-direction: row;
+  }
+
+  .select-row select {
+    flex: 1;
+  }
+}
+
+/* 드롭다운 내부 항목에도 강제 스타일 적용 */
+select option {
+  color: black !important;
+  background-color: white !important;
+}
