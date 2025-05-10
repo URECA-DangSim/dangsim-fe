@@ -1,0 +1,31 @@
+/* src/components/LoadingScreen.css */
+
+.loading-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: white;
+  }
+  
+  .spinner {
+    width: 64px;
+    height: 64px;
+    border: 8px solid #cbd5e0; /* 연한 회색 */
+    border-top: 8px solid #2d3748; /* 진한 회색 */
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+  }
+  
+  .loading-text {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #666;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
