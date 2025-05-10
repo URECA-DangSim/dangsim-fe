@@ -21,7 +21,7 @@ const MyPage = () => {
   useEffect(() => {
     const fetchUserInfo = () => {
       api
-        .get("api/users/user/profile")
+        .get("/api/users/user/profile")
         .then((res) => {
           const { profileImage, nickname, address, reward } = res.data;
           setProfileImage(profileImage);

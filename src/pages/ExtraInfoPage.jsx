@@ -85,7 +85,7 @@ const ExtraInfoPage = () => {
     }
 
     api
-      .get(`/api/users/user/check-nickname?nickname=${nickname}`) // baseURL 자동 적용
+      .get(`/api/users/user/check-nickname?nickname=${nickname}`)
       .then((res) => {
         if (!res.data.isDuplicated) {
           alert("사용 가능한 닉네임입니다.");
@@ -120,14 +120,35 @@ const ExtraInfoPage = () => {
       selectedDong
     )}`;
 
-    api
-      .post("/api/users/user/extra-info", { nickname, address: fullLocation })
+    const method = isEditMode ? "put" : "post";
+    api[method]("/api/users/user/extra-info", {
+      nickname,
+      address: fullLocation,
+    })
       .then(() => {
         alert(isEditMode ? "정보 수정 완료" : "추가 정보 입력 완료");
         navigate(isEditMode ? "/mypage" : "/");
       })
       .catch((err) => alert("제출 실패: " + err));
   };
+
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    // 컴포넌트가 처음 마운트될 때만 사용자 정보를 가져옵니다
+    const fetchUserInfo = async () => {
+      try {
+        const res = await api.get("/api/users/user/profile");
+        const { nickname } = res.data;
+        setNickname(nickname);
+        setIsNicknameChecked(true); //본인 닉네임이면 중복 확인 생략
+      } catch (error) {
+        alert("유저 정보 불러오기 실패");
+      }
+    };
+
+    fetchUserInfo();
+  }, [isEditMode]);
 
   return (
     <div className="extra-container">
