@@ -24,12 +24,16 @@
 
 // export default App;
 
-// src/App.js
-import React from 'react';
-import StartPage from './pages/PaymentPage';
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import PaymentPage from "./pages/PaymentPage";
 
 function App() {
-  return <StartPage/>;
+  return (
+    <BrowserRouter>
+      <PaymentPage />
+    </BrowserRouter>
+  );
 }
 
 export default App;
