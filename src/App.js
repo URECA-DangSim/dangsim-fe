@@ -1,38 +1,32 @@
-// import logo from './logo.svg';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;
-
+// src/App.js
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
-import PaymentPage from "./pages/PaymentPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./layout/Layout";
+import Home from "./pages/Home";
+import Chat from "./pages/Chat";
+import MyPage from "./pages/MyPage";
+import Login from "./pages/LoginPage";
+import OAuthRedirctHandler from "./pages/OAuthRedirectHandler";
+import ExtraInfo from "./pages/ExtraInfoPage";
+import "./App.css";
 
 function App() {
   return (
-    <BrowserRouter>
-      <PaymentPage />
-    </BrowserRouter>
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login/oauth2/code/kakao"
+            element={<OAuthRedirctHandler />}
+          />
+          <Route path="/extra-info" element={<ExtraInfo />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
 }
 

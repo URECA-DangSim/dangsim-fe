@@ -1,38 +1,16 @@
-.App {
-  text-align: center;
+/* App.css */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9; /* 배경 색은 필요에 따라 */
+  font-family: "Arial", sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* 전체 뷰포트 기준의 배경 (중앙 정렬) */
+body {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  align-items: flex-start;
+  min-height: 100vh;
 }

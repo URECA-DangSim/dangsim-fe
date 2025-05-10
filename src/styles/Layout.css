@@ -1,0 +1,12 @@
+/* Layout.css */
+.app-container {
+  width: 390px;
+  min-height: 100vh;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.main-content {
+  width: 100%;
+  padding-bottom: 64.25px;
+}
