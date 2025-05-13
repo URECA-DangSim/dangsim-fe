@@ -1,0 +1,190 @@
+.reward-refund-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: "Arial", sans-serif;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.back-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.input-section,
+.form-group {
+  margin-bottom: 24px;
+}
+
+.reward-row {
+  margin-top: 8px;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.input-section {
+  margin-bottom: 1.8rem;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.required {
+  color: red;
+  margin-left: 4px;
+}
+
+.input-reward {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  height: 28px;
+}
+
+.input-reward::-webkit-outer-spin-button,
+.input-reward::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-reward[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.error-message {
+  margin-top: 8px;
+  margin-left: 4px;
+  color: red;
+  font-size: 13px;
+}
+
+.bank-select-container {
+  display: flex;
+  align-items: center;
+}
+
+.bank-select {
+  position: relative;
+}
+
+.bank-button {
+  background-color: #e2e2e2;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.bank-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bank-button.selected {
+  background-color: #a4b465;
+  color: white;
+}
+
+.bank-option {
+  padding: 11px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: center;
+}
+
+.bank-option:hover {
+  background-color: #f0f7ec;
+}
+
+.account-input-container {
+  margin-top: 0;
+}
+
+.account-input {
+  flex: 1;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  height: 46px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .bank-select-container,
+  .account-input-container {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .bank-select-container {
+    width: 26%;
+  }
+
+  .account-input-container {
+    width: 74%;
+  }
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 0.75rem;
+  background-color: #626f47;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #384124;
+}
+/* 반응형 지원 */
+@media (min-width: 768px) {
+  .select-row {
+    flex-direction: row;
+  }
+
+  .select-row select {
+    flex: 1;
+  }
+}
+
+/* 드롭다운 내부 항목에도 강제 스타일 적용 */
+select option {
+  color: black !important;
+  background-color: white !important;
+}

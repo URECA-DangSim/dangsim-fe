@@ -66,7 +66,12 @@ const MyPage = () => {
           <span className="amount">{reward.toLocaleString()}원</span>
         </div>
 
-        <button className="reward-button">환급 받기</button>
+        <button
+          className="reward-button"
+          onClick={() => navigate("/reward-refund")}
+        >
+          환급 받기
+        </button>
       </div>
 
       <div className="history-card">

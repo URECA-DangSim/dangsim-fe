@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-// import { compose } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 
 const PaymentPage = () => {
@@ -9,7 +8,7 @@ const PaymentPage = () => {
   const [taskTitle, setTaskTitle] = useState("");
   const [requesterSelectedAmount, setRequesterSelectedAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // 페이지 이동용
+  const navigate = useNavigate();
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -42,32 +41,30 @@ const PaymentPage = () => {
       {
         pg: "html5_inicis",
         pay_method: "card",
-        merchant_uid: `mid_${new Date().getTime()}`, // 고유 주문번호 : 상점에서 생성
-        name: taskTitle, // taskID
-        amount: Number(requesterSelectedAmount), // 포트원에 전송하는 사용자 결제 요청 금액
-        buyer_name: userNickname, // 사용자 닉네임
-        buyer_email: userEmail, // 사용자 이메일
+        merchant_uid: `mid_${new Date().getTime()}`,
+        name: taskTitle,
+        amount: Number(requesterSelectedAmount),
+        buyer_name: userNickname,
+        buyer_email: userEmail,
       },
       async (response) => {
         if (response.success) {
           console.log(response);
           try {
-            // 결제 성공 시, imp_uid, merchant_uid 서버로 전송
             await axios.post("/api/payments/completion", {
               impUid: response.imp_uid,
               merchantUid: response.merchant_uid,
               amount: response.paid_amount,
             });
-            // alert("결제 성공 및 서버 검증 완료");
-            navigate("/DetailPage");
+            alert("결제 성공 및 서버 검증 완료");
+            navigate("/detail");
           } catch (err) {
             console.error("서버 에러 응답:", err.response);
             alert("서버 결제 검증 실패");
-            navigate("/ListPage");
+            navigate("/");
           }
         } else {
           alert(`결제 실패: ${response.error_msg}`);
-          navigate("/ListPage"); // 결제 자체 실패했을 때도 list로
         }
         setLoading(false);
       }
