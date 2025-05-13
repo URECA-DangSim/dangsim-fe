@@ -1,41 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import backButton from "../assets/back-btn.png";
 import "../styles/RewardRefund.css";
-import axios from "axios";
+import api from "../service/api";
 
 export default function RewardRefund() {
-  const [rewardAmount, setRewardAmount] = useState(0); // 서버에서 받아오는 리워드
   const navigate = useNavigate();
   const [bankOpen, setBankOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState("은행 선택");
   const [amount, setAmount] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
-  const [amountError, setAmountError] = useState("");
   const [holderName, setHolderName] = useState("");
+  const [amountError, setAmountError] = useState("");
+  const [serverErrorMessage, setServerErrorMessage] = useState("");
 
   const banks = ["국민은행", "우리은행", "농협은행", "신한은행", "IBK은행"];
 
-  // 서버에서 리워드 불러오기
-  useEffect(() => {
-    axios
-      .get("/api/user/reward")
-      .then((res) => setRewardAmount(res.data.reward))
-      .catch((err) => console.error(err));
-  }, []);
-
   const handleRefundRequest = async () => {
-    if (Number(amount) <= 0 || Number(amount) > rewardAmount) {
-      alert("잘못된 금액입니다.");
+    setServerErrorMessage("");
+
+    if (Number(amount) <= 0) {
+      setServerErrorMessage("잘못된 금액입니다.");
       return;
     }
+
     if (!selectedBank || !accountNumber || !holderName) {
-      alert("은행, 계좌번호, 예금주를 입력하세요.");
+      setServerErrorMessage("은행, 계좌번호, 예금주를 입력하세요.");
       return;
     }
 
     try {
-      await axios.post("api/users/user/reward", {
+      await api.post("/api/users/user/reward", {
         amount,
         bankName: selectedBank,
         bankAccount: accountNumber,
@@ -44,7 +39,9 @@ export default function RewardRefund() {
       alert("정상 환급 되었습니다.");
       navigate("/mypage");
     } catch (err) {
-      alert("신청 실패: " + err.response?.data?.message);
+      const message =
+        err.response?.data?.message || "알 수 없는 오류가 발생했습니다.";
+      setServerErrorMessage(message);
     }
   };
 
@@ -90,7 +87,6 @@ export default function RewardRefund() {
         {amountError && <div className="error-message">{amountError}</div>}
       </div>
 
-      {/* 환급 계좌 입력 */}
       <div className="form-group">
         <label className="form-label">
           환급 계좌<span className="required">*</span>
@@ -145,10 +141,13 @@ export default function RewardRefund() {
         />
       </div>
 
-      {/* 환급 버튼 */}
+      {serverErrorMessage && (
+        <div className="error-message server-error">{serverErrorMessage}</div>
+      )}
+
       <button
         className="submit-button"
-        disabled={!amount || Number(amount) < 1000}
+        disabled={!amount}
         onClick={handleRefundRequest}
       >
         환급하기
