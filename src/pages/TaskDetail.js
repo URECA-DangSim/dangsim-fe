@@ -32,8 +32,6 @@ export default function TaskDetail() {
     return <div>게시글을 찾을 수 없습니다.</div>;
   }
 
-  const isActive = post.status === "미배정" && post.isMyTask === false;
-
   // 버튼 클릭 시 매칭 API 호출
   const handleMatch = async () => {
     try {
@@ -138,13 +136,17 @@ export default function TaskDetail() {
         <p className="task-detail-location">{post.address}</p>
         <p className="task-detail-description">{post.content}</p>
       </div>
-      <button
-        className={`task-detail-action-button${isActive ? "" : " disabled"}`}
-        onClick={isActive ? handleMatch : undefined}
-        disabled={!isActive}
-      >
-        {isActive ? "심부름 하기" : "신청 마감"}
-      </button>
+      {!post.isMyTask && (
+        <button
+          className={`task-detail-action-button${
+            post.status === "미배정" ? "" : " disabled"
+          }`}
+          onClick={post.status === "미배정" ? handleMatch : undefined}
+          disabled={post.status !== "미배정"}
+        >
+          {post.status === "미배정" ? "심부름 하기" : "신청 마감"}
+        </button>
+      )}
     </div>
   );
 }
