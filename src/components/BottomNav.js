@@ -14,7 +14,7 @@ function BottomNav() {
 
   const navItems = [
     { label: "홈", path: "/", Icon: HomeIcon },
-    { label: "채팅", path: "/chat", Icon: ChatIcon },
+    { label: "채팅", path: "/chatroom", Icon: ChatIcon },
     { label: "마이 프로필", path: "/mypage", Icon: UserIcon },
   ];
 
