@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import TaskItem from "../components/TaskItem/TaskItem";
 import styles from "../styles/Home.module.css";
@@ -17,7 +17,7 @@ export default function Home() {
   const [hasNext, setHasNext] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     if (!hasNext || isLoading) return;
     setIsLoading(true);
     try {
@@ -46,7 +46,7 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [cursor, hasNext, isLoading]);
 
   // fetch user profile once
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function Home() {
   // initial load
   useEffect(() => {
     loadPosts();
-  }, []);
+  }, [loadPosts, hasNext, isLoading]);
 
   // infinite scroll
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function Home() {
     };
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, [cursor, hasNext, isLoading]);
+  }, [loadPosts, hasNext, isLoading]);
 
   return (
     <>

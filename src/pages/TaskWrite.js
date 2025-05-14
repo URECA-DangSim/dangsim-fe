@@ -12,7 +12,6 @@ import api from "../service/api";
 
 export default function TaskWrite() {
   const navigate = useNavigate();
-  const [images, setImages] = useState([]);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [deadline, setDeadline] = useState(dayjs().add(30, "minute"));
@@ -22,7 +21,7 @@ export default function TaskWrite() {
 
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files).slice(0, 3);
-    setImages(files);
+    // setImages(files);
     if (files.length > 0) {
       const formData = new FormData();
       files.forEach((file) => formData.append("files", file));
@@ -55,7 +54,7 @@ export default function TaskWrite() {
       };
       // Send as application/json
       const res = await api.post("/api/tasks/task", body);
-      const { taskId, merchantUid, result } = res.data;
+      const { taskId, result } = res.data;
       if (result) {
         navigate(`/task/${taskId}`);
       } else {
