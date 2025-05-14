@@ -1,0 +1,93 @@
+/* Container and header */
+.task-detail-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: 200px; /* 버튼 공간 확보 */
+  box-sizing: border-box;
+}
+
+.task-detail-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding: 16px;
+  border-bottom: 1px solid #ddd;
+  z-index: 10;
+}
+
+.task-detail-back-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Form container */
+.task-write-container {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Action button */
+.task-detail-action-button {
+  width: 127px;
+  height: 56px;
+  border-radius: 28px;
+  background-color: #626f47; /* 활성 상태 색상 */
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 1000;
+}
+
+@media (max-width: 390px) {
+  .task-detail-action-button {
+    position: fixed;
+    right: 10px;
+    bottom: 80px;
+  }
+}
+
+@media (min-width: 391px) {
+  .task-detail-action-button {
+    position: fixed;
+    right: calc((100vw - 390px) / 2 + 16px);
+    bottom: 80px;
+  }
+}
+
+.task-detail-action-button.disabled {
+  background-color: #cecece; /* 비활성 상태 색상 */
+  pointer-events: none;
+  cursor: default;
+}

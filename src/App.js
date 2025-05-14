@@ -5,6 +5,8 @@ import Layout from "./layout/Layout";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import MyPage from "./pages/MyPage";
+import TaskDetail from "./pages/TaskDetail";
+import TaskWrite from "./pages/TaskWrite";
 import Login from "./pages/LoginPage";
 import OAuthRedirctHandler from "./pages/OAuthRedirectHandler";
 import ExtraInfo from "./pages/ExtraInfoPage";
@@ -21,6 +23,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/task/:id" element={<TaskDetail />} />
+          <Route path="/write" element={<TaskWrite />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/login/oauth2/code/kakao"
