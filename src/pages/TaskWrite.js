@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -8,6 +8,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import "../styles/TaskWrite.css";
+import cameraIcon from "../assets/camera.png";
 import api from "../service/api";
 
 export default function TaskWrite() {
@@ -18,25 +19,49 @@ export default function TaskWrite() {
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrls, setImageUrls] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
+  const fileInputRef = useRef(null);
+
+  // 사진 추가 클릭 처리: 최대 3장까지 업로드
+  const handleAddPhotoClick = () => {
+    const totalCount = previewUrls.length + imageUrls.length;
+    if (totalCount >= 3) {
+      alert("사진은 최대 3장까지 업로드할 수 있습니다.");
+      return;
+    }
+    fileInputRef.current.click();
+  };
 
   const handleImageChange = async (e) => {
-    const files = Array.from(e.target.files).slice(0, 3);
-    // setImages(files);
-    if (files.length > 0) {
-      const formData = new FormData();
-      files.forEach((file) => formData.append("files", file));
-      try {
-        console.log("이미지 업로드 요청!!");
-        const uploadRes = await api.post("/api/files/images", formData);
-        setImageUrls(uploadRes.data.uploadedFileUrls || []);
-        console.log("Uploaded URLs:", uploadRes.data.uploadedFileUrls);
-        console.log("이미지 업로드 성공!!");
-      } catch (err) {
-        console.error("Image upload failed", err);
-        alert("이미지 업로드에 실패했습니다.");
-      }
-    } else {
-      setImageUrls([]);
+    const selectedFiles = Array.from(e.target.files);
+    // Calculate how many more images can be added
+    const availableSlots = 3 - previewUrls.length;
+    const filesToAdd = selectedFiles.slice(0, availableSlots);
+    if (filesToAdd.length === 0) {
+      return; // no slots available or no files selected
+    }
+
+    // Generate and append local previews
+    const newPreviews = filesToAdd.map((file) => URL.createObjectURL(file));
+    setPreviewUrls((prev) => [...prev, ...newPreviews]);
+
+    // Upload only the new files
+    const formData = new FormData();
+    filesToAdd.forEach((file) => formData.append("files", file));
+    try {
+      console.log("이미지 업로드 요청!!");
+      const uploadRes = await api.post("/api/files/images", formData);
+      console.log("Uploaded URLs:", uploadRes.data.uploadedFileUrls);
+      // Append returned URLs, limit to 3 total
+      setImageUrls((prev) =>
+        [...prev, ...(uploadRes.data.uploadedFileUrls || [])].slice(0, 3)
+      );
+      console.log("이미지 업로드 성공!!");
+    } catch (err) {
+      console.error("Image upload failed", err);
+      alert("이미지 업로드에 실패했습니다.");
+      // Roll back previews on failure
+      setPreviewUrls((prev) => prev.slice(0, prev.length - filesToAdd.length));
     }
   };
 
@@ -88,17 +113,33 @@ export default function TaskWrite() {
         </button>
       </header>
 
-      <div className="task-write-container">
-        <div className="form-group">
-          <label>사진 업로드 (최대 3장)</label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
+      <div className="task-write-image-uploader">
+        <div className="task-images">
+          <img
+            src={cameraIcon}
+            alt="사진 추가"
+            className="task-write-camera-icon"
+            onClick={handleAddPhotoClick}
           />
         </div>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          ref={fileInputRef}
+          onChange={handleImageChange}
+          style={{ display: "none" }}
+        />
+        <div className="task-write-previews">
+          {(imageUrls.length > 0 ? imageUrls : previewUrls).map((url, idx) => (
+            <div className="task-images" key={idx}>
+              <img src={url} alt={`preview-${idx}`} />
+            </div>
+          ))}
+        </div>
+      </div>
 
+      <div className="task-write-container">
         <div className="form-group">
           <label>심부름 명</label>
           <input
