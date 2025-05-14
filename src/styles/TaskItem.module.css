@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 12px;
   margin-bottom: 12px;
   border: 1px solid #ddd;
@@ -18,12 +18,16 @@
 
 .info {
   flex: 1;
+  min-width: 0; /* allow child to shrink and enable text-overflow */
 }
 
 .title {
   margin: 0 0 8px;
   font-size: 16px;
   font-weight: bold;
+  white-space: nowrap; /* 한 줄로 유지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 말줄임 표시 */
 }
 
 .meta {
