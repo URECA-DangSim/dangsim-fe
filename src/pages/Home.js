@@ -43,12 +43,12 @@ export default function Home() {
       setHasNext(next);
     } catch (err) {
       console.error("Failed to load tasks", err);
+      setHasNext(false);
     } finally {
       setIsLoading(false);
     }
   }, [cursor, hasNext, isLoading]);
 
-  // fetch user profile once
   useEffect(() => {
     api
       .get("/api/users/user/profile")
@@ -63,12 +63,10 @@ export default function Home() {
       });
   }, []);
 
-  // initial load
   useEffect(() => {
     loadPosts();
-  }, [loadPosts, hasNext, isLoading]);
+  }, []);
 
-  // infinite scroll
   useEffect(() => {
     const onScroll = () => {
       if (
@@ -82,7 +80,7 @@ export default function Home() {
     };
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, [loadPosts, hasNext, isLoading]);
+  }, [loadPosts]);
 
   return (
     <>
