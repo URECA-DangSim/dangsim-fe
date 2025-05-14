@@ -17,23 +17,43 @@ export default function TaskWrite() {
   const [amount, setAmount] = useState("");
   const [deadline, setDeadline] = useState(dayjs().add(30, "minute"));
   const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUrls, setImageUrls] = useState([]);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const files = Array.from(e.target.files).slice(0, 3);
     setImages(files);
+    if (files.length > 0) {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("files", file));
+      try {
+        console.log("이미지 업로드 요청!!");
+        const uploadRes = await api.post("/api/files/images", formData);
+        setImageUrls(uploadRes.data.uploadedFileUrls || []);
+        console.log("Uploaded URLs:", uploadRes.data.uploadedFileUrls);
+        console.log("이미지 업로드 성공!!");
+      } catch (err) {
+        console.error("Image upload failed", err);
+        alert("이미지 업로드에 실패했습니다.");
+      }
+    } else {
+      setImageUrls([]);
+    }
   };
 
   const handleSubmit = async () => {
     if (!isFormValid) return;
     try {
+      // Build JSON request body
       const body = {
         title: title.trim(),
-        content: title.trim(), // TODO: 본문 입력 칸 추가 필요
+        content: description.trim(),
         deadline: deadline.format("YY.MM.DD HH:mm"),
         reward: Number(amount),
         address: location.trim(),
-        imageUrls: [], // TODO: 이미지 업로드 후 URL 배열로 대체
+        imageUrls,
       };
+      // Send as application/json
       const res = await api.post("/api/tasks/task", body);
       const { taskId, merchantUid, result } = res.data;
       if (result) {
@@ -49,6 +69,7 @@ export default function TaskWrite() {
 
   const isFormValid =
     title.trim() !== "" &&
+    description.trim() !== "" &&
     amount !== "" &&
     !isNaN(amount) &&
     Number(amount) >= 100 &&
@@ -112,6 +133,18 @@ export default function TaskWrite() {
               />
             </DemoContainer>
           </LocalizationProvider>
+        </div>
+
+        <div className="form-group">
+          <label>자세한 설명*</label>
+          <textarea
+            value={description}
+            placeholder="심부름의 세부 내용을 작성해주세요.
+신뢰할 수 있는 심부름을 위하여 자세히 작성해주세요.
+욕설이나 비방 등의 내용은 삭제 조치될 수 있습니다."
+            rows={4}
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </div>
 
         <div className="form-group">
