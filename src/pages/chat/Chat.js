@@ -1,4 +1,4 @@
-// src/pages/Chat.js
+// src/pages/chat/Chat.js
 function Chat() {
   return <h1>채팅 페이지</h1>;
 }
