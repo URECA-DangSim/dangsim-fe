@@ -65,10 +65,12 @@ api.interceptors.response.use(
       }
     }
 
-    // 401 에러가 아닌 경우
-    if (error.response?.status === 403) {
-      // 권한 없는 경우
-      window.location.href = "/";
+    // 401 에러 (인증 실패) 또는 403 에러 (권한 없음) 처리
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // 메인 페이지가 아닌 경우에만 리다이렉트
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
       return Promise.reject(error);
     }
 
