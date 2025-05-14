@@ -18,6 +18,22 @@ const MyPage = () => {
     navigate("/extra-info", { state: { isEditMode: true } });
   };
 
+  const handleLogout = () => {
+    if (window.confirm("로그아웃 하시겠습니까?")) {
+      api
+        .post("/api/auth/logout")
+        .then(() => {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          navigate("/login");
+        })
+        .catch((err) => {
+          console.error("로그아웃 실패:", err);
+          alert("로그아웃 중 오류가 발생했습니다.");
+        });
+    }
+  };
+
   useEffect(() => {
     const fetchUserInfo = () => {
       api
@@ -88,7 +104,9 @@ const MyPage = () => {
         </div>
       </div>
 
-      <button className="logout-button">로그아웃</button>
+      <button className="logout-button" onClick={handleLogout}>
+        로그아웃
+      </button>
     </div>
   );
 };
