@@ -4,7 +4,6 @@ import TaskItem from "../components/TaskItem/TaskItem";
 import styles from "../styles/Home.module.css";
 import logo from "../assets/logo.png";
 import api from "../service/api";
-import axios from "axios";
 
 const PAGE_SIZE = 7;
 
@@ -51,7 +50,7 @@ export default function Home() {
 
   // fetch user profile once
   useEffect(() => {
-    axios
+    api
       .get("/api/users/user/profile")
       .then((res) => {
         setIsLoggedIn(true);
