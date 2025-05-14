@@ -1,6 +1,7 @@
+/* eslint-disable */
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -10,6 +11,12 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import "../styles/TaskWrite.css";
 import cameraIcon from "../assets/camera.png";
 import api from "../service/api";
+import axios from "axios";
+
+const CONSUMER_KEY = process.env.REACT_APP_SGIS_KEY;
+const CONSUMER_SECRET = process.env.REACT_APP_SGIS_SECRET;
+const getNameByCode = (list, code) =>
+  list.find((item) => item.cd === code)?.addr_name || "";
 
 export default function TaskWrite() {
   const navigate = useNavigate();
@@ -21,6 +28,61 @@ export default function TaskWrite() {
   const [imageUrls, setImageUrls] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const fileInputRef = useRef(null);
+
+  // SGIS address selection
+  const [accessToken, setAccessToken] = useState(null);
+  const [sidoList, setSidoList] = useState([]);
+  const [sigunguList, setSigunguList] = useState([]);
+  const [dongList, setDongList] = useState([]);
+  const [selectedSido, setSelectedSido] = useState("");
+  const [selectedSigungu, setSelectedSigungu] = useState("");
+  const [selectedDong, setSelectedDong] = useState("");
+
+  // 1) SGIS 토큰 발급
+  useEffect(() => {
+    axios
+      .get("https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json", {
+        params: {
+          consumer_key: CONSUMER_KEY,
+          consumer_secret: CONSUMER_SECRET,
+        },
+      })
+      .then((res) => setAccessToken(res.data.result.accessToken))
+      .catch((err) => console.error("SGIS 인증 실패:", err));
+  }, []);
+
+  // 2) 시도 목록
+  useEffect(() => {
+    if (!accessToken) return;
+    axios
+      .get("https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json", {
+        params: { accessToken },
+      })
+      .then((res) => setSidoList(res.data.result))
+      .catch((err) => console.error("시도 로딩 실패:", err));
+  }, [accessToken]);
+
+  // 3) 시군구 목록
+  useEffect(() => {
+    if (!selectedSido || !accessToken) return;
+    axios
+      .get("https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json", {
+        params: { accessToken, cd: selectedSido },
+      })
+      .then((res) => setSigunguList(res.data.result))
+      .catch((err) => console.error("시군구 로딩 실패:", err));
+  }, [selectedSido, accessToken]);
+
+  // 4) 읍면동 목록
+  useEffect(() => {
+    if (!selectedSigungu || !accessToken) return;
+    axios
+      .get("https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json", {
+        params: { accessToken, cd: selectedSigungu },
+      })
+      .then((res) => setDongList(res.data.result))
+      .catch((err) => console.error("읍면동 로딩 실패:", err));
+  }, [selectedSigungu, accessToken]);
 
   // 사진 추가 클릭 처리: 최대 3장까지 업로드
   const handleAddPhotoClick = () => {
@@ -74,7 +136,10 @@ export default function TaskWrite() {
         content: description.trim(),
         deadline: deadline.format("YY.MM.DD HH:mm"),
         reward: Number(amount),
-        address: location.trim(),
+        address: `${getNameByCode(sidoList, selectedSido)} ${getNameByCode(
+          sigunguList,
+          selectedSigungu
+        )} ${getNameByCode(dongList, selectedDong)}`,
         imageUrls,
       };
       // Send as application/json
@@ -100,14 +165,16 @@ export default function TaskWrite() {
     Number(amount) <= 1000000 &&
     deadline.isValid() &&
     dayjs().add(30, "minute").isBefore(deadline) &&
-    location.trim() !== "";
+    selectedSido !== "" &&
+    selectedSigungu !== "" &&
+    selectedDong !== "";
 
   return (
     <div className="task-detail-container">
       <header className="task-detail-header">
         <button
           className="task-detail-back-button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
         >
           ← 뒤로
         </button>
@@ -189,12 +256,50 @@ export default function TaskWrite() {
 
         <div className="form-group">
           <label>심부름 희망 장소</label>
-          <input
-            type="text"
-            value={location}
-            placeholder="희망 장소를 입력하세요"
-            onChange={(e) => setLocation(e.target.value)}
-          />
+          <div className="select-row">
+            <select
+              value={selectedSido}
+              onChange={(e) => {
+                setSelectedSido(e.target.value);
+                setSelectedSigungu("");
+                setSelectedDong("");
+              }}
+            >
+              <option value="">시도 선택</option>
+              {sidoList.map((item) => (
+                <option key={item.cd} value={item.cd}>
+                  {item.addr_name}
+                </option>
+              ))}
+            </select>
+            <select
+              value={selectedSigungu}
+              onChange={(e) => {
+                setSelectedSigungu(e.target.value);
+                setSelectedDong("");
+              }}
+              disabled={!selectedSido}
+            >
+              <option value="">시군구 선택</option>
+              {sigunguList.map((item) => (
+                <option key={item.cd} value={item.cd}>
+                  {item.addr_name}
+                </option>
+              ))}
+            </select>
+            <select
+              value={selectedDong}
+              onChange={(e) => setSelectedDong(e.target.value)}
+              disabled={!selectedSigungu}
+            >
+              <option value="">읍면동 선택</option>
+              {dongList.map((item) => (
+                <option key={item.cd} value={item.cd}>
+                  {item.addr_name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
