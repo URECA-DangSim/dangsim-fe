@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import TaskItem from "../components/TaskItem/TaskItem";
 import styles from "../styles/Home.module.css";
@@ -16,9 +16,12 @@ export default function Home() {
   const [cursor, setCursor] = useState(null);
   const [hasNext, setHasNext] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const hasNextRef = useRef(hasNext);
+  const isLoadingRef = useRef(isLoading);
+  const loadPostsRef = useRef(null);
 
   const loadPosts = useCallback(async () => {
-    if (!hasNext || isLoading) return;
+    if (!hasNextRef.current || isLoadingRef.current) return;
     setIsLoading(true);
     try {
       const params = { size: PAGE_SIZE };
@@ -27,8 +30,8 @@ export default function Home() {
       }
 
       const res = await api.get("/api/tasks", { params });
-      const { items = [], nextCursor, hasNext: next } = res.data;
-      console.log("Fetched tasks data:", res.data);
+      const { items = [], nextCursor } = res.data;
+      const nextHas = items.length === PAGE_SIZE;
 
       const mapped = items.map((item) => ({
         id: item.taskId,
@@ -40,14 +43,26 @@ export default function Home() {
 
       setPosts((prev) => [...prev, ...mapped]);
       setCursor(nextCursor);
-      setHasNext(next);
+      setHasNext(nextHas);
     } catch (err) {
       console.error("Failed to load tasks", err);
       setHasNext(false);
     } finally {
       setIsLoading(false);
     }
-  }, [cursor, hasNext, isLoading]);
+  }, [cursor]);
+
+  useEffect(() => {
+    hasNextRef.current = hasNext;
+  }, [hasNext]);
+
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
+  useEffect(() => {
+    loadPostsRef.current = loadPosts;
+  }, [loadPosts]);
 
   useEffect(() => {
     api
@@ -64,23 +79,23 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    loadPosts();
+    loadPostsRef.current();
   }, []);
 
   useEffect(() => {
     const onScroll = () => {
       if (
-        hasNext &&
-        !isLoading &&
+        hasNextRef.current &&
+        !isLoadingRef.current &&
         window.innerHeight + window.pageYOffset + 100 >=
           document.body.offsetHeight
       ) {
-        loadPosts();
+        loadPostsRef.current();
       }
     };
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, [loadPosts]);
+  }, []);
 
   return (
     <>
