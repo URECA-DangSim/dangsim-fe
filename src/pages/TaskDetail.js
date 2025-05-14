@@ -66,7 +66,7 @@ export default function TaskDetail() {
       <header className="task-detail-header">
         <button
           className="task-detail-back-button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
         >
           ← 뒤로
         </button>
