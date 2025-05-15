@@ -18,6 +18,14 @@ const MyPage = () => {
     navigate("/extra-info", { state: { isEditMode: true } });
   };
 
+  const handleClickRequestdButton = () => {
+    navigate("/requested", { state: { isEditMode: true } });
+  };
+
+  const handleClickPerformedButton = () => {
+    navigate("/performed", { state: { isEditMode: true } });
+  };
+
   const handleLogout = () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       api
@@ -93,11 +101,11 @@ const MyPage = () => {
       <div className="history-card">
         <div className="history-title">나의 심부름</div>
         <div className="history-buttons">
-          <button className="history-item">
+          <button className="history-item" onClick={handleClickRequestdButton}>
             <img src={requestImage} alt="요청내역" />
             <span>요청 내역</span>
           </button>
-          <button className="history-item">
+          <button className="history-item" onClick={handleClickPerformedButton}>
             <img src={performImage} alt="수행내역" />
             <span>수행 내역</span>
           </button>

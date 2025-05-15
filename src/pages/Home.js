@@ -4,6 +4,7 @@ import TaskItem from "../components/TaskItem/TaskItem";
 import styles from "../styles/Home.module.css";
 import logo from "../assets/logo.png";
 import api from "../service/api";
+import locationIcon from "../assets/location.png";
 
 const PAGE_SIZE = 7;
 
@@ -30,8 +31,8 @@ export default function Home() {
       }
 
       const res = await api.get("/api/tasks", { params });
-      const { items = [], nextCursor, hasNext: serverHasNext } = res.data;
-      const nextHas = serverHasNext;
+      const { items = [], nextCursor } = res.data;
+      const nextHas = items.length === PAGE_SIZE;
 
       const mapped = items.map((item) => ({
         id: item.taskId,
@@ -105,11 +106,17 @@ export default function Home() {
           alt="당심 로고"
           className={styles.logo}
           onClick={() => navigate("/")}
-          style={{ cursor: "pointer" }}
         />
         <div className={styles.userArea}>
           {isLoggedIn ? (
-            <span className={styles.userInfo}>{userAddress}</span>
+            <span className={styles.userInfo}>
+              <img
+                src={locationIcon}
+                alt="location"
+                className={styles.locationIcon}
+              />
+              {userAddress}
+            </span>
           ) : (
             <button
               className={styles.loginButton}
