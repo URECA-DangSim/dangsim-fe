@@ -4,6 +4,7 @@
   margin: 0 auto;
   padding-bottom: 200px; /* 버튼 공간 확보 */
   box-sizing: border-box;
+  position: relative;
 }
 
 .task-detail-header {
@@ -103,4 +104,85 @@
   background-color: #cecece;
   pointer-events: none; /* 클릭 비활성화 */
   cursor: default; /* 커서 변경 */
+}
+
+/* 이미지 래퍼를 위한 스타일 */
+.task-detail-image-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* 삭제 아이콘 오버레이 */
+.task-detail-delete-icon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* TaskDetail: 이미지 캐러셀 스타일 */
+.task-detail-image-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.task-detail-image {
+  width: 100%;
+  height: auto;
+  max-height: 240px; /* 이미지 최대 높이 고정 */
+  object-fit: contain;
+}
+
+/* 네비게이션 버튼 (좌우) */
+.image-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: white;
+  font-size: 24px;
+  padding: 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 20;
+}
+
+.task-detail-image-wrapper:hover .image-nav {
+  opacity: 1;
+}
+
+.image-nav.left {
+  left: 8px;
+}
+
+.image-nav.right {
+  right: 8px;
+}
+
+/* 인디케이터 (하단 중앙) */
+.image-indicators {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 20;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  background: #ccc;
+  border-radius: 50%;
+}
+
+.indicator-dot.active {
+  background: #fff;
 }
