@@ -30,8 +30,8 @@ export default function Home() {
       }
 
       const res = await api.get("/api/tasks", { params });
-      const { items = [], nextCursor } = res.data;
-      const nextHas = items.length === PAGE_SIZE;
+      const { items = [], nextCursor, hasNext: serverHasNext } = res.data;
+      const nextHas = serverHasNext;
 
       const mapped = items.map((item) => ({
         id: item.taskId,
