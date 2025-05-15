@@ -12,6 +12,8 @@ import ExtraInfo from "./pages/ExtraInfoPage";
 import "./App.css";
 import RewardRefundPage from "./pages/RewardRefundPage";
 import Chat from "./pages/chat/Chat";
+import RequestedTasks from "./pages/RequestedTasks";
+import PerformedTasks from "./pages/PerformedTasks";
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
           />
           <Route path="/extra-info" element={<ExtraInfo />} />
           <Route path="/reward-refund" element={<RewardRefundPage />} />
+          <Route path="/requested" element={<RequestedTasks />} />
+          <Route path="/performed" element={<PerformedTasks />} />
         </Routes>
       </Layout>
     </Router>
