@@ -172,11 +172,12 @@ export default function TaskWrite() {
       // Send as application/json
       const res = await api.post("/api/tasks/task", body);
       const { taskId, merchantUid, result } = res.data;
+      console.log("task api의 taskID : ", taskId);
       if (result) {
         setTaskId(taskId);
         setMerchant(merchantUid);
         alert("심부름 요청 성공!");
-        return { merchantUid };
+        return { merchantUid, taskId };
         // navigate(`/task/${taskId}`);
       } else {
         alert("심부름 요청에 실패했습니다.");
@@ -199,7 +200,7 @@ export default function TaskWrite() {
     selectedSigungu !== "" &&
     selectedDong !== "";
 
-  const onClickPayment = (merchantUidParam) => {
+  const onClickPayment = (merchantUidParam, taskIDParam) => {
     console.log("결제 버튼 클릭됨");
 
     if (!window.IMP) {
@@ -222,21 +223,22 @@ export default function TaskWrite() {
         buyer_name: userNickname,
       },
       async (rsp) => {
-        console.log("결제 응답:", rsp);
+        // console.log("결제 응답:", rsp);
+        console.log(taskIDParam);
+
         if (rsp.success) {
           try {
             const res = await api.post("/api/payments/validation", {
               impUid: rsp.imp_uid,
               merchantUid: merchantUidParam,
-              taskId: taskId,
+              taskId: taskIDParam,
               buyer_name: userNickname,
             });
-            console.log("결제 검증 응답:", res.merchant_uid);
 
-            const { taskId: verifiedTaskId } = res.data;
+            // const { taskId: verifiedTaskId } = res.data;
 
             alert("결제가 완료되었습니다.");
-            navigate(`/task/${verifiedTaskId}`);
+            navigate(`/task/${taskIDParam}`);
           } catch (err) {
             console.error("결제 검증 실패:", err);
             alert("서버 결제 검증에 실패했습니다.");
@@ -254,7 +256,7 @@ export default function TaskWrite() {
   const onButtonClick = async () => {
     const success = await handleSubmit();
     if (success) {
-      onClickPayment(success.merchantUid); // 후속 로직 실행
+      onClickPayment(success.merchantUid, success.taskId); // 후속 로직 실행
     }
   };
 
