@@ -83,19 +83,17 @@ export default function TaskWrite() {
     dayjs().add(30, "minute").isBefore(deadline) &&
     location.trim() !== "";
 
-  useEffect(() => {
-    // console.log("상태 변화:");
-    // console.log("title:", title);
-    // console.log("amount:", amount);
-    // console.log("deadline:", deadline.format());
-    // console.log("location:", location);
-    // console.log("description:", description);
-    // console.log("imageUrls:", imageUrls);
-    // console.log("userNickname:", userNickname);
-    // console.log("isFormValid:", isFormValid);
-  }, [title, amount, deadline, location, description, imageUrls, userNickname]);
+  useEffect(() => {}, [
+    title,
+    amount,
+    deadline,
+    location,
+    description,
+    imageUrls,
+    userNickname,
+  ]);
 
-  const onClickPayment = () => {
+  const onClickPayment = (merchantUidParam) => {
     console.log("결제 버튼 클릭됨");
 
     if (!window.IMP) {
@@ -123,7 +121,7 @@ export default function TaskWrite() {
           try {
             const res = await api.post("/api/payments/validation", {
               impUid: rsp.imp_uid,
-              merchantUid: merchantUid,
+              merchantUid: merchantUidParam,
               taskId: taskId,
               buyer_name: userNickname,
             });
@@ -176,7 +174,7 @@ export default function TaskWrite() {
         setMerchant(merchantUid);
         alert("심부름 요청 성공!");
         // onClickPayment(merchantUid);
-        return true;
+        return { merchantUid };
       } else {
         alert("심부름 요청에 실패했습니다.");
       }
@@ -190,7 +188,7 @@ export default function TaskWrite() {
   const onButtonClick = async () => {
     const success = await handleSubmit();
     if (success) {
-      onClickPayment(); // 후속 로직 실행
+      onClickPayment(success.merchantUid); // 후속 로직 실행
     }
   };
 
