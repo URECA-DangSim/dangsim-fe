@@ -13,7 +13,7 @@ const OAuthRedirectHandler = () => {
     if (!code) return;
 
     axios
-      .get(`http://${API_URL}/api/auth/login/kakao?code=${code}`)
+      .get(`${API_URL}/api/auth/login/kakao?code=${code}`)
       .then((res) => {
         const { accessToken, refreshToken, role } = res.data;
         localStorage.setItem("accessToken", accessToken);
