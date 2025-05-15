@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import styles from "../../styles/Chat.css";
+import { useNavigate } from "react-router-dom";
 import backIcon from "../../assets/back-btn.png"; // 뒤로가기 아이콘
 import taskAvatar from "../../assets/logo.png"; // Task 썸네일 더미 이미지
 
@@ -74,7 +73,6 @@ const currentUserId = 1; // 본인 ID 더미
 
 const Chat = () => {
   const navigate = useNavigate();
-  const { chatRoomId } = useParams();
   const [messages, setMessages] = useState(dummyMessages);
   const [input, setInput] = useState("");
 
