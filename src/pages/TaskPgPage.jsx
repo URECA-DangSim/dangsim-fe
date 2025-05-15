@@ -1,3 +1,5 @@
+// 포트원 결제 더미 페이지
+
 import React, { useEffect, useState } from "react";
 // import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,7 +17,7 @@ const PaymentPage = () => {
 
   // const taskId = location.state?.taskId; // taskId는 이전 페이지에서 넘겨줘야 함
 
-  // 포트원 스크립틀 로딩
+  // 포트원 스크립트 로딩
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://cdn.iamport.kr/js/iamport.payment-1.2.0.js";
