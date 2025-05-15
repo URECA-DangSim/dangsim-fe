@@ -1,149 +1,52 @@
-import React from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../service/api";
 import styles from "../../styles/Home.module.css";
 import "../../styles/ChatRoom.css";
 import logo from "../../assets/logo.png";
 
-// 더미 채팅방 데이터
-const dummyChats = [
-  {
-    chatRoomId: 1,
-    name: "심부름꾼 1",
-    lastMessage: "바퀴벌레 잡았습니다. 확인을 눌러주세요.",
-    time: "2025.05.05 15:41",
-    unread: true,
-  },
-  {
-    chatRoomId: 2,
-    name: "요청자 1",
-    lastMessage: "바퀴벌레 잡으러 몇시까지 오실 수 있나요?",
-    time: "15:41",
-    unread: false,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-  {
-    chatRoomId: 3,
-    name: "심부름꾼 2",
-    lastMessage:
-      "바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!바퀴벌레 발견했어요!",
-    time: "15:40",
-    unread: true,
-  },
-];
-
 const ChatRoom = () => {
   const navigate = useNavigate();
+  const listRef = useRef(null);
+
+  const [chatRooms, setChatRooms] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [hasNext, setHasNext] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const fetchChatRooms = useCallback(async () => {
+    if (!hasNext || loading) return;
+    setLoading(true);
+    try {
+      const params = { size: 20 };
+      if (cursor) {
+        params.cursor = cursor;
+      }
+      const response = await api.get("/api/chat-rooms", { params });
+      // CursorPageResponse 구조: { items: [...], nextCursor: string, hasNext: boolean }
+      const { items, nextCursor, hasNext: more } = response.data;
+      const rooms = Array.isArray(items) ? items : [];
+      setChatRooms((prev) => [...prev, ...rooms]);
+      setCursor(nextCursor);
+      setHasNext(more);
+    } catch (err) {
+      console.error("Failed to load chat rooms", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [cursor, hasNext, loading]);
+
+  useEffect(() => {
+    fetchChatRooms();
+  }, [fetchChatRooms]);
+
+  const onScroll = () => {
+    const el = listRef.current;
+    if (!el) return;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
+      fetchChatRooms();
+    }
+  };
 
   return (
     <div className="chat-room-container">
@@ -166,23 +69,29 @@ const ChatRoom = () => {
         </div>
       </header>
 
-      <ul className="chat-list">
-        {dummyChats.map((chat) => (
+      <ul
+        className="chat-list"
+        ref={listRef}
+        onScroll={onScroll}
+        style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
+      >
+        {chatRooms.map((chat) => (
           <li
             key={chat.chatRoomId}
             className="chat-item"
             onClick={() => navigate(`/chatroom/${chat.chatRoomId}`)}
           >
             <div className="chat-info">
-              <div className="name">{chat.name}</div>
+              <div className="name">{chat.nickname}</div>
               <div className="message-line">
-                <span className="last-message">{chat.lastMessage}</span>
-                <span className="time">{chat.time}</span>
+                <span className="last-message">{chat.content}</span>
+                <span className="time">{chat.timestamp}</span>
               </div>
             </div>
-            {chat.unread && <div className="unread-dot" />}
+            {chat.isRead === false && <div className="unread-dot" />}
           </li>
         ))}
+        {loading && <li className="loading">로딩 중...</li>}
       </ul>
     </div>
   );
