@@ -83,16 +83,6 @@ export default function TaskWrite() {
     dayjs().add(30, "minute").isBefore(deadline) &&
     location.trim() !== "";
 
-  useEffect(() => {}, [
-    title,
-    amount,
-    deadline,
-    location,
-    description,
-    imageUrls,
-    userNickname,
-  ]);
-
   const onClickPayment = (merchantUidParam) => {
     console.log("결제 버튼 클릭됨");
 
