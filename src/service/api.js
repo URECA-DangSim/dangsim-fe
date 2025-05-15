@@ -11,7 +11,6 @@ if (!API_URL) {
  */
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 5000,
 });
 
 // 요청 인터셉터: 토큰이 있으면 헤더에 추가

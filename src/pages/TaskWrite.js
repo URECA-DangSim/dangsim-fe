@@ -26,9 +26,12 @@ export default function TaskWrite() {
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrls, setImageUrls] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [merchantUid, setMerchant] = useState("");
+  const [taskId, setTaskId] = useState(null);
+  const [userNickname, setUserNickname] = useState("");
   const [previewUrls, setPreviewUrls] = useState([]);
   const fileInputRef = useRef(null);
-
   // SGIS address selection
   const [accessToken, setAccessToken] = useState(null);
   const [sidoList, setSidoList] = useState([]);
@@ -37,6 +40,30 @@ export default function TaskWrite() {
   const [selectedSido, setSelectedSido] = useState("");
   const [selectedSigungu, setSelectedSigungu] = useState("");
   const [selectedDong, setSelectedDong] = useState("");
+
+  useEffect(() => {
+    const fetchNickname = async () => {
+      try {
+        const res = await api.get("/api/users/user/profile");
+        setUserNickname(res.data.nickname);
+        console.log("닉네임 응답:", res.data.nickname);
+      } catch (error) {
+        console.error("닉네임 요청 실패:", error);
+      }
+    };
+    fetchNickname();
+  }, []);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.iamport.kr/js/iamport.payment-1.2.0.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   // 1) SGIS 토큰 발급
   useEffect(() => {
@@ -144,9 +171,13 @@ export default function TaskWrite() {
       };
       // Send as application/json
       const res = await api.post("/api/tasks/task", body);
-      const { taskId, result } = res.data;
+      const { taskId, merchantUid, result } = res.data;
       if (result) {
-        navigate(`/task/${taskId}`);
+        setTaskId(taskId);
+        setMerchant(merchantUid);
+        alert("심부름 요청 성공!");
+        return { merchantUid };
+        // navigate(`/task/${taskId}`);
       } else {
         alert("심부름 요청에 실패했습니다.");
       }
@@ -155,7 +186,6 @@ export default function TaskWrite() {
       alert("심부름 요청 중 오류가 발생했습니다.");
     }
   };
-
   const isFormValid =
     title.trim() !== "" &&
     description.trim() !== "" &&
@@ -168,6 +198,65 @@ export default function TaskWrite() {
     selectedSido !== "" &&
     selectedSigungu !== "" &&
     selectedDong !== "";
+
+  const onClickPayment = (merchantUidParam) => {
+    console.log("결제 버튼 클릭됨");
+
+    if (!window.IMP) {
+      alert("결제 모듈이 로딩되지 않았습니다.");
+      return;
+    }
+
+    const { IMP } = window;
+    IMP.init("imp54283017");
+
+    setLoading(true);
+
+    IMP.request_pay(
+      {
+        pg: "html5_inicis",
+        pay_method: "card",
+        merchant_uid: merchantUid,
+        amount: amount,
+        name: title,
+        buyer_name: userNickname,
+      },
+      async (rsp) => {
+        console.log("결제 응답:", rsp);
+        if (rsp.success) {
+          try {
+            const res = await api.post("/api/payments/validation", {
+              impUid: rsp.imp_uid,
+              merchantUid: merchantUidParam,
+              taskId: taskId,
+              buyer_name: userNickname,
+            });
+            console.log("결제 검증 응답:", res.merchant_uid);
+
+            const { taskId: verifiedTaskId } = res.data;
+
+            alert("결제가 완료되었습니다.");
+            navigate(`/task/${verifiedTaskId}`);
+          } catch (err) {
+            console.error("결제 검증 실패:", err);
+            alert("서버 결제 검증에 실패했습니다.");
+            navigate("/");
+          }
+        } else {
+          alert(`결제 실패: ${rsp.error_msg}`);
+        }
+        setLoading(false);
+      }
+    );
+  };
+
+  // 버튼 클릭 시
+  const onButtonClick = async () => {
+    const success = await handleSubmit();
+    if (success) {
+      onClickPayment(success.merchantUid); // 후속 로직 실행
+    }
+  };
 
   return (
     <div className="task-detail-container">
@@ -213,7 +302,9 @@ export default function TaskWrite() {
             type="text"
             value={title}
             placeholder="심부름 명을 입력하세요"
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
           />
         </div>
 
@@ -223,9 +314,11 @@ export default function TaskWrite() {
             type="number"
             value={amount}
             placeholder="100 ~ 1,000,000"
-            onChange={(e) => setAmount(e.target.value)}
             min={100}
             max={1000000}
+            onChange={(e) => {
+              setAmount(e.target.value);
+            }}
           />
         </div>
 
@@ -235,7 +328,9 @@ export default function TaskWrite() {
             <DemoContainer components={["DateTimePicker"]}>
               <DateTimePicker
                 value={deadline}
-                onChange={(newValue) => setDeadline(newValue)}
+                onChange={(newValue) => {
+                  setDeadline(newValue);
+                }}
                 minDateTime={dayjs().add(30, "minute")}
               />
             </DemoContainer>
@@ -246,11 +341,13 @@ export default function TaskWrite() {
           <label>자세한 설명*</label>
           <textarea
             value={description}
+            rows={4}
             placeholder="심부름의 세부 내용을 작성해주세요.
 신뢰할 수 있는 심부름을 위하여 자세히 작성해주세요.
 욕설이나 비방 등의 내용은 삭제 조치될 수 있습니다."
-            rows={4}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              setDescription(e.target.value);
+            }}
           />
         </div>
 
@@ -305,8 +402,8 @@ export default function TaskWrite() {
 
       <button
         className="task-detail-action-button"
-        disabled={!isFormValid}
-        onClick={handleSubmit}
+        disabled={!isFormValid || loading}
+        onClick={onButtonClick}
       >
         결제하기
       </button>

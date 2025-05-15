@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+// import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../service/api";
 
 const PaymentPage = () => {
   const [userNickname, setUserNickname] = useState("");
@@ -9,17 +10,41 @@ const PaymentPage = () => {
   const [requesterSelectedAmount, setRequesterSelectedAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { taskId } = useParams(); // URL로부터 taskId를 가져온다고 가정
+  // const location = useLocation();
 
+  // const taskId = location.state?.taskId; // taskId는 이전 페이지에서 넘겨줘야 함
+
+  // 포트원 스크립틀 로딩
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://cdn.iamport.kr/js/iamport.payment-1.2.0.js";
     script.async = true;
     document.body.appendChild(script);
-
     return () => {
       document.body.removeChild(script);
     };
   }, []);
+
+  // 사용자 정보 및 Task 정보 로딩
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [userRes, taskRes] = await Promise.all([
+          api.get("/api/users/me"), // 현재 로그인 사용자 정보 by 서버
+          api.get(`/api/tasks/${taskId}`), // 해당 Task 정보 by 서버
+        ]);
+        setUserNickname(userRes.data.nickname);
+        setTaskTitle(taskRes.data.title);
+        setRequesterSelectedAmount(taskRes.data.reward);
+      } catch (error) {
+        console.error("데이터 로딩 실패:", error);
+        alert("사용자 또는 게시글 정보를 불러오는데 실패했습니다.");
+        navigate("/");
+      }
+    };
+    fetchData();
+  }, [taskId, navigate]);
 
   const onClickPayment = async () => {
     if (!window.IMP) {
@@ -30,10 +55,11 @@ const PaymentPage = () => {
     const { IMP } = window;
     IMP.init("imp54283017");
 
-    if (!userNickname || !userEmail || !taskTitle || !requesterSelectedAmount) {
-      alert("모든 항목을 입력해주세요");
-      return;
-    }
+    // 이메일 입력은 선택
+    // if (!userNickname || !userEmail || !taskTitle || !requesterSelectedAmount) {
+    // alert("모든 항목을 입력해주세요");
+    // return;
+    // }
 
     setLoading(true);
 
@@ -51,10 +77,11 @@ const PaymentPage = () => {
         if (response.success) {
           console.log(response);
           try {
-            await axios.post("/api/payments/completion", {
+            await api.post("/api/payments/completion", {
               impUid: response.imp_uid,
               merchantUid: response.merchant_uid,
               amount: response.paid_amount,
+              taskId: taskId,
             });
             alert("결제 성공 및 서버 검증 완료");
             navigate("/detail");
@@ -73,9 +100,9 @@ const PaymentPage = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>결제 요청 페이지</h1>
+      <h1>심부름 상세 - 결제 요청 페이지</h1>
 
-      <div style={{ marginBottom: "10px" }}>
+      {/* <div style={{ marginBottom: "10px" }}>
         <label>사용자 이름:</label>
         <br />
         <input
@@ -84,6 +111,12 @@ const PaymentPage = () => {
           onChange={(e) => setUserNickname(e.target.value)}
           placeholder="닉네임"
         />
+      </div> */}
+
+      <div style={{ marginBottom: "10px" }}>
+        <label>사용자 이름:</label>
+        <br />
+        <input type="text" value={userNickname} readOnly />
       </div>
 
       <div style={{ marginBottom: "10px" }}>
@@ -100,23 +133,13 @@ const PaymentPage = () => {
       <div style={{ marginBottom: "10px" }}>
         <label>게시글 제목:</label>
         <br />
-        <input
-          type="text"
-          value={taskTitle}
-          onChange={(e) => setTaskTitle(e.target.value)}
-          placeholder="게시글 제목을 입력하세요"
-        />
+        <input type="text" value={taskTitle} readOnly />
       </div>
 
       <div style={{ marginBottom: "10px" }}>
         <label>결제 요청 금액 (원):</label>
         <br />
-        <input
-          type="number"
-          value={requesterSelectedAmount}
-          onChange={(e) => setRequesterSelectedAmount(e.target.value)}
-          placeholder="10000"
-        />
+        <input type="number" value={requesterSelectedAmount} readOnly />
       </div>
 
       {loading ? (
