@@ -1,52 +1,73 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../service/api";
 import styles from "../../styles/Home.module.css";
 import "../../styles/ChatRoom.css";
+import api from "../../service/api";
 import logo from "../../assets/logo.png";
 
-const ChatRoom = () => {
-  const navigate = useNavigate();
-  const listRef = useRef(null);
+const PAGE_SIZE = 15;
 
+export default function ChatRoom() {
+  const navigate = useNavigate();
   const [chatRooms, setChatRooms] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [hasNext, setHasNext] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchChatRooms = useCallback(async () => {
-    if (!hasNext || loading) return;
-    setLoading(true);
+  const hasNextRef = useRef(hasNext);
+  const isLoadingRef = useRef(isLoading);
+  const loadChatRoomsRef = useRef(null);
+  const listRef = useRef(null);
+
+  const loadChatRooms = useCallback(async () => {
+    if (!hasNextRef.current || isLoadingRef.current) return;
+    setIsLoading(true);
+    isLoadingRef.current = true;
     try {
-      const params = { size: 20 };
-      if (cursor) {
-        params.cursor = cursor;
-      }
-      const response = await api.get("/api/chat-rooms", { params });
-      // CursorPageResponse 구조: { items: [...], nextCursor: string, hasNext: boolean }
-      const { items, nextCursor, hasNext: more } = response.data;
-      const rooms = Array.isArray(items) ? items : [];
-      setChatRooms((prev) => [...prev, ...rooms]);
+      const params = { size: PAGE_SIZE };
+      if (cursor) params.cursor = cursor;
+      const res = await api.get("/api/chat-rooms", { params });
+      const { items = [], nextCursor, hasNext: next } = res.data;
+      setChatRooms((prev) => [...prev, ...items]);
       setCursor(nextCursor);
-      setHasNext(more);
+      setHasNext(next);
     } catch (err) {
       console.error("Failed to load chat rooms", err);
+      setHasNext(false);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+      isLoadingRef.current = false;
     }
-  }, [cursor, hasNext, loading]);
+  }, [cursor]);
 
   useEffect(() => {
-    fetchChatRooms();
-  }, [fetchChatRooms]);
+    hasNextRef.current = hasNext;
+  }, [hasNext]);
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+  useEffect(() => {
+    loadChatRoomsRef.current = loadChatRooms;
+  }, [loadChatRooms]);
+  useEffect(() => {
+    loadChatRoomsRef.current();
+  }, []);
 
-  const onScroll = () => {
+  useEffect(() => {
     const el = listRef.current;
     if (!el) return;
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
-      fetchChatRooms();
-    }
-  };
+    const onScroll = () => {
+      if (
+        hasNextRef.current &&
+        !isLoadingRef.current &&
+        el.scrollTop + el.clientHeight >= el.scrollHeight - 100
+      ) {
+        loadChatRoomsRef.current();
+      }
+    };
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className="chat-room-container">
@@ -61,20 +82,10 @@ const ChatRoom = () => {
           onClick={() => navigate("/")}
           style={{ cursor: "pointer" }}
         />
-        <div
-          className="menuName"
-          style={{ fontSize: 32, textAlign: "left", marginLeft: 16 }}
-        >
-          채팅
-        </div>
+        <div className="menuName">채팅</div>
       </header>
 
-      <ul
-        className="chat-list"
-        ref={listRef}
-        onScroll={onScroll}
-        style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
-      >
+      <ul className="chat-list" ref={listRef}>
         {chatRooms.map((chat) => (
           <li
             key={chat.chatRoomId}
@@ -91,10 +102,8 @@ const ChatRoom = () => {
             {chat.isRead === false && <div className="unread-dot" />}
           </li>
         ))}
-        {loading && <li className="loading">로딩 중...</li>}
+        {isLoading && <li className="loading">로딩 중...</li>}
       </ul>
     </div>
   );
-};
-
-export default ChatRoom;
+}
