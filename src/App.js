@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import ChatRoom from "./pages/chat/ChatRoom";
 import MyPage from "./pages/MyPage";
 import TaskWrite from "./pages/TaskWrite";
+import TaskDetail from "./pages/TaskDetail";
 import Login from "./pages/LoginPage";
 import OAuthRedirctHandler from "./pages/OAuthRedirectHandler";
 import ExtraInfo from "./pages/ExtraInfoPage";
@@ -25,6 +26,7 @@ function App() {
           <Route path="/chatroom/:chatRoomId" element={<Chat />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/write" element={<TaskWrite />} />
+          <Route path="/task/:id" element={<TaskDetail />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/login/oauth2/code/kakao"
