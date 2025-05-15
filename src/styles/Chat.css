@@ -1,0 +1,178 @@
+/* Chat.css */
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f9f9f9;
+  /* overflow: hidden; */
+}
+
+.chat-header {
+  position: sticky;
+  top: 0;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background-color: #a4b465;
+  color: #ffffff;
+  z-index: 200;
+}
+
+.back-btn {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  margin-right: 12px;
+}
+
+.partner-name {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.task-card {
+  display: flex;
+  position: sticky;
+  top: 55px;
+  align-items: center;
+  background-color: #ffffff;
+  margin: 0 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+}
+
+.task-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.task-details {
+  flex: 1;
+  margin-left: 12px;
+}
+
+.task-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #777;
+}
+
+.task-date {
+  margin-right: 8px;
+}
+
+.task-price {
+  font-weight: 600;
+  color: #333;
+}
+
+.task-status {
+  background-color: #f3c07d;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  cursor: default;
+}
+
+/* 메시지 리스트 영역에만 스크롤 적용 */
+.message-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px;
+  overflow-y: auto;
+}
+
+/* 메시지 말풍선 공통 스타일 */
+.bubble {
+  position: relative;
+  max-width: 70%;
+  padding: 8px 12px;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  word-wrap: break-word;
+  min-width: 9ch;
+}
+
+/* 상대방 메시지: 왼쪽 정렬 */
+.bubble.partner {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  align-self: flex-start;
+}
+
+/* 말풍선 내부 p 태그(텍스트)만 오른쪽 정렬 */
+.bubble.partner .bubble-text {
+  display: block; /* p 태그 기본 block 이지만, 혹시 모를 경우 명시 */
+  width: 100%; /* 부모 말풍선 폭만큼 확보 */
+}
+
+/* 내 메시지: 오른쪽 정렬 */
+.bubble.mine {
+  background-color: #a4b465;
+  color: #ffffff;
+  align-self: flex-end;
+}
+
+.bubble-text {
+  margin: 0;
+  font-size: 14px;
+}
+
+.bubble-time {
+  display: block;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.45);
+  position: absolute;
+  bottom: -16px;
+  right: 8px;
+}
+
+/* 입력창은 항상 하단에 고정 */
+.chat-input-area {
+  position: sticky;
+  bottom: 64.25px;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  z-index: 100;
+}
+
+.chat-input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+}
+
+.send-btn {
+  margin-left: 8px;
+  padding: 0 16px;
+  height: 40px;
+  background-color: #a4b465;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
