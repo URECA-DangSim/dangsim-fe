@@ -1,99 +1,161 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import backIcon from "../../assets/back-btn.png"; // 뒤로가기 아이콘
-import taskAvatar from "../../assets/logo.png"; // Task 썸네일 더미 이미지
-
-// ChatRoomInfoResponse 더미 데이터
-const chatRoomInfo = {
-  chatRoomId: 3,
-  taskInfo: {
-    title: "바퀴벌레 잡아주세요",
-    date: "24.05.01 15:00",
-    price: "5,000원",
-    status: "심부름 완료",
-  },
-  chatPartnerId: 42,
-  partnerNickname: "심부름꾼 2",
-};
-
-// ChatMessageDetailResponse 더미 데이터
-const dummyMessages = [
-  {
-    messageId: 1,
-    senderId: 42,
-    content: "안녕하세요! 바퀴벌레가 집에 있어요.",
-    timeStamp: "15:01",
-  },
-  {
-    messageId: 2,
-    senderId: 1,
-    content: "지금 출발할게요.",
-    timeStamp: "15:02",
-  },
-  {
-    messageId: 3,
-    senderId: 42,
-    content: "감사합니다!",
-    timeStamp: "2024. 05. 12 15:03",
-  },
-  {
-    messageId: 4,
-    senderId: 42,
-    content: "감사합니다!",
-    timeStamp: "2024. 05. 12 15:03",
-  },
-  {
-    messageId: 5,
-    senderId: 42,
-    content:
-      "감사합니다!감사합니다!감사합니다!감사합니다!감사합니다!감사합니다!감사합니다!감사합니다!감사합니다!감사합니다!감사합니다!감사합니다!",
-    timeStamp: "2024. 05. 12 15:03",
-  },
-  {
-    messageId: 6,
-    senderId: 42,
-    content: "감사합니다!",
-    timeStamp: "2024. 05. 12 15:03",
-  },
-  {
-    messageId: 7,
-    senderId: 42,
-    content: "감사합니다!",
-    timeStamp: "2024. 05. 12 15:03",
-  },
-  {
-    messageId: 8,
-    senderId: 42,
-    content: "감사합니다!",
-    timeStamp: "2024. 05. 12 15:03",
-  },
-];
-
-const currentUserId = 1; // 본인 ID 더미
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../service/api";
+import { Client } from "@stomp/stompjs";
+import backIcon from "../../assets/back-btn.png";
+import taskAvatar from "../../assets/logo.png";
+import "../../styles/Chat.css";
 
 const Chat = () => {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState(dummyMessages);
+  const { chatRoomId } = useParams();
+  const [chatRoomInfo, setChatRoomInfo] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  const handleSend = () => {
-    if (input.trim() === "") return;
-    const newMsg = {
-      messageId: Date.now(),
-      senderId: currentUserId,
-      content: input,
-      timeStamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+  const [hasNext, setHasNext] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  const listRef = useRef(null);
+  const bottomRef = useRef(null);
+  const isLoadingRef = useRef(false);
+  const initialLoadRef = useRef(true);
+  const stompRef = useRef(null);
+  const cursorRef = useRef(null);
+
+  const scrollToBottom = () => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      try {
+        const res = await api.get(`/api/chat-rooms/${chatRoomId}/taskInfo`);
+        setChatRoomInfo(res.data);
+        setCurrentUserId(res.data.myId);
+      } catch (err) {
+        console.error("채팅방 정보 조회 실패", err);
+      }
     };
-    setMessages([...messages, newMsg]);
+    fetchInfo();
+  }, [chatRoomId]);
+
+  const loadMessages = async () => {
+    if (!hasNext || isLoadingRef.current) return;
+    isLoadingRef.current = true;
+
+    try {
+      const params = { size: 15 };
+      if (cursorRef.current) params.cursor = cursorRef.current;
+
+      const res = await api.get(`/api/chat-rooms/${chatRoomId}`, { params });
+      const older = res.data.items.flatMap((i) => i.messages).reverse();
+
+      setMessages((prev) => [...older, ...prev]);
+
+      cursorRef.current = res.data.nextCursor;
+
+      setHasNext(res.data.hasNext);
+
+      if (initialLoadRef.current) {
+        setTimeout(() => {
+          scrollToBottom();
+        }, 100);
+      }
+    } catch (err) {
+      console.error("메시지 로딩 실패", err);
+    } finally {
+      isLoadingRef.current = false;
+    }
+  };
+
+  useEffect(() => {
+    initialLoadRef.current = true;
+    setMessages([]);
+    cursorRef.current = null;
+    setHasNext(true);
+    loadMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatRoomId]);
+
+  useEffect(() => {
+    const handleWindowScroll = () => {
+      if (initialLoadRef.current) {
+        const nearBottom =
+          window.innerHeight + window.scrollY >=
+          document.body.scrollHeight - 50;
+        if (nearBottom) {
+          initialLoadRef.current = false;
+        }
+      }
+
+      if (
+        window.scrollY <= 100 &&
+        hasNext &&
+        !isLoadingRef.current &&
+        !initialLoadRef.current
+      ) {
+        loadMessages();
+      }
+    };
+
+    window.addEventListener("scroll", handleWindowScroll);
+    return () => window.removeEventListener("scroll", handleWindowScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatRoomId, hasNext]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const client = new Client({
+      brokerURL: `ws://localhost:8080/ws-chat`,
+      connectHeaders: { Authorization: `Bearer ${token}` },
+      reconnectDelay: 5000,
+    });
+
+    client.onConnect = () => {
+      client.subscribe(`/sub/chat-rooms/${chatRoomId}`, (frame) => {
+        const payload = JSON.parse(frame.body);
+        setMessages((prev) => {
+          const next = [...prev, payload];
+          setTimeout(() => {
+            scrollToBottom();
+          }, 100);
+          return next;
+        });
+      });
+    };
+    client.onStompError = (frame) => console.error("STOMP 에러", frame);
+    client.activate();
+    stompRef.current = client;
+    return () => client.deactivate();
+  }, [chatRoomId]);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    const client = stompRef.current;
+    if (!client?.connected) return;
+    client.publish({
+      destination: `/pub/chat-rooms/${chatRoomId}`,
+      body: JSON.stringify({
+        content: input,
+        type: "TALK",
+        senderId: currentUserId,
+      }),
+    });
     setInput("");
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+  };
+
+  if (!chatRoomInfo) return <div>로딩 중...</div>;
+
+  const handleTaskClick = () => {
+    navigate(`/task/${chatRoomInfo.taskInfo.taskId}`);
   };
 
   return (
-    <div className="chat-container">
-      {/* 헤더: 뒤로가기 + 상대방 닉네임 */}
+    <>
       <header className="chat-header">
         <img
           src={backIcon}
@@ -104,41 +166,41 @@ const Chat = () => {
         <h2 className="partner-name">{chatRoomInfo.partnerNickname}</h2>
       </header>
 
-      {/* Task Info 카드 */}
       <div className="task-card">
         <img src={taskAvatar} alt="Task" className="task-avatar" />
-        <div className="task-details">
+        <div className="task-details" onClick={handleTaskClick}>
           <div className="task-title">{chatRoomInfo.taskInfo.title}</div>
           <div className="task-meta">
-            <span className="task-date">{chatRoomInfo.taskInfo.date}</span>
-            <span className="task-price">{chatRoomInfo.taskInfo.price}</span>
+            <span className="task-date">{chatRoomInfo.taskInfo.deadline}</span>
+            <span className="task-price">{chatRoomInfo.taskInfo.reward}</span>
           </div>
         </div>
-        <button className="task-status">{chatRoomInfo.taskInfo.status}</button>
+        <button className="task-status">
+          {chatRoomInfo.taskInfo.isCompleted ? "완료됨" : "진행 중"}
+        </button>
       </div>
 
-      {/* 메시지 리스트 */}
-      <div className="message-list">
+      <div className="message-list" ref={listRef}>
         {messages.map((msg) => {
           const isMine = msg.senderId === currentUserId;
           return (
             <div
-              key={msg.messageId}
-              className={isMine ? "bubble mine" : "bubble partner"}
+              key={msg.messageId || `${msg.senderId}-${msg.timeStamp}`}
+              className={`bubble ${isMine ? "mine" : "partner"}`}
             >
               <p className="bubble-text">{msg.content}</p>
               <span className="bubble-time">{msg.timeStamp}</span>
             </div>
           );
         })}
+        <div ref={bottomRef} />
       </div>
 
-      {/* 입력창 + 전송 버튼 */}
       <div className="chat-input-area">
         <input
           type="text"
           className="chat-input"
-          placeholder="Message"
+          placeholder="메시지를 입력하세요"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -147,7 +209,7 @@ const Chat = () => {
           전송
         </button>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -25,13 +25,18 @@
   height: 24px;
   cursor: pointer;
   margin-right: 12px;
+  display: block;
 }
 
 .partner-name {
   font-size: 18px;
   font-weight: 600;
+  margin: 0; /* 기본 h2 margin 제거 */
+  line-height: 1; /* 텍스트 정렬 보정 */
+  display: flex;
+  align-items: center; /* h2 내부 텍스트도 수직 정렬 */
+  height: 100%; /* 부모 채우기 */
 }
-
 .task-card {
   display: flex;
   position: sticky;
@@ -55,6 +60,7 @@
 .task-details {
   flex: 1;
   margin-left: 12px;
+  cursor: pointer;
 }
 
 .task-title {
@@ -96,6 +102,7 @@
   flex-direction: column;
   padding: 8px 16px;
   overflow-y: auto;
+  min-height: 630px;
 }
 
 /* 메시지 말풍선 공통 스타일 */
