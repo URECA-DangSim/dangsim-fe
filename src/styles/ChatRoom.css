@@ -8,8 +8,8 @@
   list-style: none;
   margin: 0;
   padding: 0;
-
-  height: calc(100vh - 95px); /* 헤더 높이 제외한 공간만큼 */
+  margin-top: 60px;
+  height: 85vh;
   overflow-y: auto;
 }
 
