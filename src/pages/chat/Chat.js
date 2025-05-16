@@ -8,6 +8,8 @@ import "../../styles/Chat.css";
 
 const Chat = () => {
   const navigate = useNavigate();
+  const WEBSOCKET = process.env.REACT_APP_WEBSOCKET;
+
   const { chatRoomId } = useParams();
   const [chatRoomInfo, setChatRoomInfo] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -107,7 +109,7 @@ const Chat = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const client = new Client({
-      brokerURL: `ws://localhost:8080/ws-chat`,
+      brokerURL: `ws://${WEBSOCKET}/ws-chat`,
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
     });
