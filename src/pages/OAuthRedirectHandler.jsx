@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../components/Loading";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const OAuthRedirectHandler = () => {
   const navigate = useNavigate();
 
@@ -11,7 +13,7 @@ const OAuthRedirectHandler = () => {
     if (!code) return;
 
     axios
-      .get(`http://localhost:8080/api/auth/login/kakao?code=${code}`)
+      .get(`${API_URL}/api/auth/login/kakao?code=${code}`)
       .then((res) => {
         const { accessToken, refreshToken, role } = res.data;
         localStorage.setItem("accessToken", accessToken);

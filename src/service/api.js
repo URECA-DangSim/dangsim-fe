@@ -11,7 +11,6 @@ if (!API_URL) {
  */
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 5000,
 });
 
 // 요청 인터셉터: 토큰이 있으면 헤더에 추가
@@ -69,7 +68,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401 || error.response?.status === 403) {
       // 메인 페이지가 아닌 경우에만 리다이렉트
       if (window.location.pathname !== "/") {
-        window.location.href = "/";
+        alert("로그인 후 이용해주세요.");
+        window.location.href = "/login";
       }
       return Promise.reject(error);
     }
