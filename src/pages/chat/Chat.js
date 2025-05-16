@@ -8,6 +8,7 @@ import "../../styles/Chat.css";
 
 const Chat = () => {
   const navigate = useNavigate();
+  // eslint-disable-next-line
   const WEBSOCKET = process.env.REACT_APP_WEBSOCKET;
 
   const { chatRoomId } = useParams();
@@ -130,6 +131,7 @@ const Chat = () => {
     client.activate();
     stompRef.current = client;
     return () => client.deactivate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatRoomId]);
 
   const handleSend = () => {
