@@ -12,7 +12,7 @@ const Chat = () => {
   const [chatRoomInfo, setChatRoomInfo] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [cursor, setCursor] = useState(null);
+  const [setCursor] = useState(null);
   const [hasNext, setHasNext] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
 
