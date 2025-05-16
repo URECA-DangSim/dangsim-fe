@@ -8,6 +8,7 @@ import "../../styles/Chat.css";
 
 const Chat = () => {
   const navigate = useNavigate();
+
   // eslint-disable-next-line
   const WEBSOCKET = process.env.REACT_APP_WEBSOCKET;
 
@@ -110,6 +111,7 @@ const Chat = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const client = new Client({
+
       brokerURL: `ws://${WEBSOCKET}/ws-chat`,
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
@@ -131,6 +133,7 @@ const Chat = () => {
     client.activate();
     stompRef.current = client;
     return () => client.deactivate();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatRoomId]);
 
