@@ -12,7 +12,7 @@ const Chat = () => {
   const [chatRoomInfo, setChatRoomInfo] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [setCursor] = useState(null);
+
   const [hasNext, setHasNext] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -53,7 +53,6 @@ const Chat = () => {
 
       setMessages((prev) => [...older, ...prev]);
 
-      setCursor(res.data.nextCursor);
       cursorRef.current = res.data.nextCursor;
 
       setHasNext(res.data.hasNext);
@@ -74,9 +73,9 @@ const Chat = () => {
     initialLoadRef.current = true;
     setMessages([]);
     cursorRef.current = null;
-    setCursor(null);
     setHasNext(true);
     loadMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatRoomId]);
 
   useEffect(() => {
@@ -102,6 +101,7 @@ const Chat = () => {
 
     window.addEventListener("scroll", handleWindowScroll);
     return () => window.removeEventListener("scroll", handleWindowScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatRoomId, hasNext]);
 
   useEffect(() => {
