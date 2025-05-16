@@ -70,7 +70,7 @@ export default function ChatRoom() {
   }, []);
 
   return (
-    <div className="chat-room-container">
+    <>
       <header
         className={styles.header}
         style={{ justifyContent: "flex-start" }}
@@ -99,11 +99,10 @@ export default function ChatRoom() {
                 <span className="time">{chat.timestamp}</span>
               </div>
             </div>
-            {chat.isRead === false && <div className="unread-dot" />}
           </li>
         ))}
         {isLoading && <li className="loading">로딩 중...</li>}
       </ul>
-    </div>
+    </>
   );
 }
