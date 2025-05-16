@@ -4,7 +4,6 @@ import styles from "../styles/login.module.css";
 import logo from "../assets/logo.png";
 import logoName from "../assets/logo-name.png";
 import kakaoButton from "../assets/kakao-login.png";
-import googleButton from "../assets/google-login.svg";
 
 const LoginPage = () => {
   /**
@@ -28,13 +27,6 @@ const LoginPage = () => {
         alt="카카오 로그인"
         className={styles.kakaoBtn}
         onClick={handleKakaoLogin}
-      />
-
-      <img
-        src={googleButton}
-        alt="구글 로그인"
-        className={styles.googleBtn}
-        // onClick={handleGoogleLogin}
       />
     </div>
   );

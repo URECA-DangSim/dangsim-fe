@@ -69,6 +69,77 @@ export default function ChatRoom() {
     return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "../../styles/Home.module.css";
+import "../../styles/ChatRoom.css";
+import api from "../../service/api";
+import logo from "../../assets/logo.png";
+
+const PAGE_SIZE = 15;
+
+export default function ChatRoom() {
+  const navigate = useNavigate();
+  const [chatRooms, setChatRooms] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [hasNext, setHasNext] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const hasNextRef = useRef(hasNext);
+  const isLoadingRef = useRef(isLoading);
+  const loadChatRoomsRef = useRef(null);
+  const listRef = useRef(null);
+
+  const loadChatRooms = useCallback(async () => {
+    if (!hasNextRef.current || isLoadingRef.current) return;
+    setIsLoading(true);
+    isLoadingRef.current = true;
+    try {
+      const params = { size: PAGE_SIZE };
+      if (cursor) params.cursor = cursor;
+      const res = await api.get("/api/chat-rooms", { params });
+      const { items = [], nextCursor, hasNext: next } = res.data;
+      setChatRooms((prev) => [...prev, ...items]);
+      setCursor(nextCursor);
+      setHasNext(next);
+    } catch (err) {
+      console.error("Failed to load chat rooms", err);
+      setHasNext(false);
+    } finally {
+      setIsLoading(false);
+      isLoadingRef.current = false;
+    }
+  }, [cursor]);
+
+  useEffect(() => {
+    hasNextRef.current = hasNext;
+  }, [hasNext]);
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+  useEffect(() => {
+    loadChatRoomsRef.current = loadChatRooms;
+  }, [loadChatRooms]);
+  useEffect(() => {
+    loadChatRoomsRef.current();
+  }, []);
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (
+        hasNextRef.current &&
+        !isLoadingRef.current &&
+        el.scrollTop + el.clientHeight >= el.scrollHeight - 100
+      ) {
+        loadChatRoomsRef.current();
+      }
+    };
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <>
       <header
@@ -105,4 +176,5 @@ export default function ChatRoom() {
       </ul>
     </>
   );
+}
 }

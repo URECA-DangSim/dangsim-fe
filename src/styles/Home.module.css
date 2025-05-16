@@ -4,8 +4,8 @@
   left: 50%;
   transform: translateX(-50%);
   width: 350px;
-  height: 60px; /* 중간 지점 높이로 조정 */
-  padding: 0 20px; /* 좌우 패딩만 유지 */
+  height: 60px;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,40 +15,47 @@
 }
 
 .logo {
-  width: 43px; /* 적절한 크기로 조절 */
+  width: 43px;
   height: 43px;
   object-fit: contain;
 }
 
 .loginButton {
   display: inline-block;
-  padding: 8px 24px; /* 좌우 여백을 넉넉히 줘서 타원형 느낌 연출 */
-  background-color: #a4b465; /* Fill */
-  color: #ffffff; /* Text Fill */
-  font-size: 14px; /* Font Size */
-  text-align: center; /* Text Alignment */
-  border: 2px solid #a4b465; /* Stroke (same 색상, 2px 두께) */
-  border-radius: 40px; /* Corner Radius */
-  box-sizing: border-box; /* Border가 내부로 계산되도록 */
+  padding: 8px 24px;
+  background-color: #a4b465;
+  color: #ffffff;
+  font-size: 14px;
+  text-align: center;
+  border: 2px solid #a4b465;
+  border-radius: 40px;
+  box-sizing: border-box;
   cursor: pointer;
-  line-height: 1; /* 텍스트 수직 중앙 정렬 조정 시 필요시 수정 */
+  line-height: 1;
 }
 
 .userInfo {
   font-size: 14px;
   color: #333;
+  display: flex;
+  align-items: center;
 }
 
-/* src/pages/Home/Home.module.css */
+.locationIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
 
 .container {
   padding: 16px;
-  padding-top: 100px;
-  position: relative; /* 버튼 absolute 위치 기준 */
+  padding-top: 70px;
   padding-bottom: 200px;
+  position: relative;
 }
 
-/* Mobile: fixed positioning */
+/* Mobile */
 @media (max-width: 390px) {
   .writeButton {
     position: fixed;
@@ -57,7 +64,7 @@
   }
 }
 
-/* Desktop: fixed relative to viewport, aligned with container */
+/* Desktop */
 @media (min-width: 391px) {
   .writeButton {
     position: fixed;
@@ -66,7 +73,6 @@
   }
 }
 
-/* Shared button styles */
 .writeButton {
   width: 127px;
   height: 56px;
