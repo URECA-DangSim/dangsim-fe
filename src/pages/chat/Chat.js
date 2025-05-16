@@ -1,4 +1,3 @@
-// src/pages/chat/Chat.js
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../service/api";
@@ -18,9 +17,15 @@ const Chat = () => {
   const [currentUserId, setCurrentUserId] = useState(null);
 
   const listRef = useRef(null);
+  const bottomRef = useRef(null);
   const isLoadingRef = useRef(false);
   const initialLoadRef = useRef(true);
   const stompRef = useRef(null);
+  const cursorRef = useRef(null);
+
+  const scrollToBottom = () => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -39,29 +44,25 @@ const Chat = () => {
     if (!hasNext || isLoadingRef.current) return;
     isLoadingRef.current = true;
 
-    const el = listRef.current;
-    const prevHeight = el?.scrollHeight || 0;
-
     try {
-      const params = { size: 25 };
-      if (cursor) params.cursor = cursor;
+      const params = { size: 15 };
+      if (cursorRef.current) params.cursor = cursorRef.current;
 
       const res = await api.get(`/api/chat-rooms/${chatRoomId}`, { params });
       const older = res.data.items.flatMap((i) => i.messages).reverse();
 
       setMessages((prev) => [...older, ...prev]);
+
       setCursor(res.data.nextCursor);
+      cursorRef.current = res.data.nextCursor;
+
       setHasNext(res.data.hasNext);
 
-      setTimeout(() => {
-        if (!el) return;
-        if (initialLoadRef.current) {
-          el.scrollTop = el.scrollHeight;
-          initialLoadRef.current = false;
-        } else {
-          el.scrollTop = el.scrollHeight - prevHeight;
-        }
-      }, 100);
+      if (initialLoadRef.current) {
+        setTimeout(() => {
+          scrollToBottom();
+        }, 100);
+      }
     } catch (err) {
       console.error("메시지 로딩 실패", err);
     } finally {
@@ -72,22 +73,35 @@ const Chat = () => {
   useEffect(() => {
     initialLoadRef.current = true;
     setMessages([]);
+    cursorRef.current = null;
     setCursor(null);
     setHasNext(true);
     loadMessages();
   }, [chatRoomId]);
 
   useEffect(() => {
-    const el = listRef.current;
-    if (!el) return;
-    const onScroll = () => {
-      console.log("스크롤 이벤트 발생!"); // 이 로그가 찍히는지 확인
-      if (el.scrollTop <= 50 && hasNext && !isLoadingRef.current) {
+    const handleWindowScroll = () => {
+      if (initialLoadRef.current) {
+        const nearBottom =
+          window.innerHeight + window.scrollY >=
+          document.body.scrollHeight - 50;
+        if (nearBottom) {
+          initialLoadRef.current = false;
+        }
+      }
+
+      if (
+        window.scrollY <= 100 &&
+        hasNext &&
+        !isLoadingRef.current &&
+        !initialLoadRef.current
+      ) {
         loadMessages();
       }
     };
-    el.addEventListener("scroll", onScroll);
-    return () => el.removeEventListener("scroll", onScroll);
+
+    window.addEventListener("scroll", handleWindowScroll);
+    return () => window.removeEventListener("scroll", handleWindowScroll);
   }, [chatRoomId, hasNext]);
 
   useEffect(() => {
@@ -104,7 +118,7 @@ const Chat = () => {
         setMessages((prev) => {
           const next = [...prev, payload];
           setTimeout(() => {
-            listRef.current.scrollTop = listRef.current.scrollHeight;
+            scrollToBottom();
           }, 100);
           return next;
         });
@@ -130,14 +144,18 @@ const Chat = () => {
     });
     setInput("");
     setTimeout(() => {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
+      scrollToBottom();
     }, 100);
   };
 
   if (!chatRoomInfo) return <div>로딩 중...</div>;
 
+  const handleTaskClick = () => {
+    navigate(`/task/${chatRoomInfo.taskInfo.taskId}`);
+  };
+
   return (
-    <div className="chat-container">
+    <>
       <header className="chat-header">
         <img
           src={backIcon}
@@ -150,7 +168,7 @@ const Chat = () => {
 
       <div className="task-card">
         <img src={taskAvatar} alt="Task" className="task-avatar" />
-        <div className="task-details">
+        <div className="task-details" onClick={handleTaskClick}>
           <div className="task-title">{chatRoomInfo.taskInfo.title}</div>
           <div className="task-meta">
             <span className="task-date">{chatRoomInfo.taskInfo.deadline}</span>
@@ -175,6 +193,7 @@ const Chat = () => {
             </div>
           );
         })}
+        <div ref={bottomRef} />
       </div>
 
       <div className="chat-input-area">
@@ -190,7 +209,7 @@ const Chat = () => {
           전송
         </button>
       </div>
-    </div>
+    </>
   );
 };
 
