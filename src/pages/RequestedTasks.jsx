@@ -88,7 +88,13 @@ export default function RequestedTasks() {
       {/* 본문 */}
       <div ref={containerRef} style={{ padding: "16px", paddingTop: "70px" }}>
         {tasks.map((post) => (
-          <TaskItem key={post.id} post={post} />
+          <div
+            key={post.id}
+            onClick={() => navigate(`/task/${post.id}`)}
+            style={{ cursor: "pointer" }}
+          >
+            <TaskItem post={post} />
+          </div>
         ))}
         {isLoadingRef.current && (
           <p style={{ textAlign: "center", marginTop: "16px" }}>
