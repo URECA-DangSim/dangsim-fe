@@ -54,7 +54,7 @@ const MyPage = () => {
           setReward(reward);
         })
         .catch((err) => {
-          alert("유저 정보 가져오기 실패: ");
+          console.error("유저 정보 가져오기 실패: ", err);
         });
     };
 
