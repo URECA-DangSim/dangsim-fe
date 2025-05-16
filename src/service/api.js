@@ -68,7 +68,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401 || error.response?.status === 403) {
       // 메인 페이지가 아닌 경우에만 리다이렉트
       if (window.location.pathname !== "/") {
-        window.location.href = "/";
+        alert("로그인 후 이용해주세요.");
+        window.location.href = "/login";
       }
       return Promise.reject(error);
     }
