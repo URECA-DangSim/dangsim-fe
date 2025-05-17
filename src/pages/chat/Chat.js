@@ -111,7 +111,6 @@ const Chat = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const client = new Client({
-
       brokerURL: `ws://${WEBSOCKET}/ws-chat`,
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
@@ -183,7 +182,7 @@ const Chat = () => {
           </div>
         </div>
         <button className="task-status">
-          {chatRoomInfo.taskInfo.isCompleted ? "완료됨" : "진행 중"}
+          {chatRoomInfo.taskInfo.isCompleted ? "심부름 종료" : "심부름 완료"}
         </button>
       </div>
 
