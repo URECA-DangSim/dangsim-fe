@@ -182,7 +182,7 @@ const Chat = () => {
           </div>
         </div>
         <button className="task-status">
-          {chatRoomInfo.taskInfo.isCompleted ? "완료됨" : "진행 중"}
+          {chatRoomInfo.taskInfo.isCompleted ? "심부름 종료" : "심부름 완료"}
         </button>
       </div>
 
