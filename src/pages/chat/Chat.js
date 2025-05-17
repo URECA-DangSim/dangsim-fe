@@ -111,8 +111,7 @@ const Chat = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const client = new Client({
-
-      brokerURL: `ws://${WEBSOCKET}/ws-chat`,
+      brokerURL: `wss://${WEBSOCKET}/ws-chat`,
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
     });
