@@ -163,7 +163,7 @@ const Chat = () => {
   const handleCompleteTask = async () => {
     try {
       // const taskId = chatRoomInfo.taskInfo.taskId;
-      await api.post(`"/api/reward/chat/${chatId}"`);
+      await api.post(`"/api/reward/chat/${chatRoomId}"`);
       alert("심부름을 완료 처리했습니다.");
     } catch (err) {
       console.error("심부름 완료 처리 실패", err);
