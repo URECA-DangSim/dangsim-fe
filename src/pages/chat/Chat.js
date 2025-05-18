@@ -160,6 +160,17 @@ const Chat = () => {
     navigate(`/task/${chatRoomInfo.taskInfo.taskId}`);
   };
 
+  const handleCompleteTask = async () => {
+    try {
+      const taskId = chatRoomInfo.taskInfo.taskId;
+      await api.post(`/api/reward/task/${taskId}`);
+      alert("심부름을 완료 처리했습니다.");
+    } catch (err) {
+      console.error("심부름 완료 처리 실패", err);
+      alert("심부름 완료 처리에 실패했습니다.");
+    }
+  };
+
   return (
     <>
       <header className="chat-header">
@@ -181,7 +192,7 @@ const Chat = () => {
             <span className="task-price">{chatRoomInfo.taskInfo.reward}</span>
           </div>
         </div>
-        <button className="task-status">
+        <button className="task-status" onClick={handleCompleteTask}>
           {chatRoomInfo.taskInfo.isCompleted ? "심부름 종료" : "심부름 완료"}
         </button>
       </div>
